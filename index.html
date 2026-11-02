@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="A sleek, modern, responsive calculator inspired by the reference design with history, memory, and advanced functions.">
+  <title>Smart Calculator</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%23ff9500'/><text x='50%' y='65%' font-size='55' font-weight='bold' fill='white' font-family='sans-serif' text-anchor='middle'>=</text></svg>">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Main Calculator Device Container -->
+    <main class="calculator-container" id="calculator-container">
+      
+      <!-- Minimalist Floating Top Actions (Zero vertical layout height) -->
+      <nav class="floating-top-bar" aria-label="Calculator options">
+        <div class="top-bar-left">
+          <button id="theme-toggle" class="subtle-icon-btn" aria-label="Toggle Dark/Light Mode" title="Toggle Dark/Light Mode">
+            <!-- Moon icon (active in dark mode) -->
+            <svg class="svg-icon moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <!-- Sun icon (active in light mode) -->
+            <svg class="svg-icon sun-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          
+          <button id="history-toggle" class="subtle-icon-btn" aria-label="Open History" title="Calculation History">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span id="history-badge" class="count-badge hidden">0</span>
+          </button>
+        </div>
+
+        <div class="top-bar-right">
+          <button id="memory-toggle" class="subtle-pill-btn" aria-label="Toggle Memory Panel" title="Memory Functions">
+            <span>MEM</span>
+            <span id="memory-dot" class="active-dot hidden"></span>
+          </button>
+          <button id="scientific-toggle" class="subtle-pill-btn" aria-label="Toggle Scientific Mode" title="Advanced Functions">
+            <span>fx</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Display Section -->
+      <section class="display-section" id="display-section" aria-label="Calculator Display">
+        <!-- Live Expression / Formula Display -->
+        <div class="expression-display" id="expression-display" aria-live="polite"></div>
+        
+        <!-- Primary Output / Current Value -->
+        <div class="result-container" id="result-container">
+          <span class="result-display" id="result-display" role="textbox" aria-readonly="true">0</span>
+        </div>
+        
+        <!-- Floating Copy Tooltip -->
+        <div class="copy-toast" id="copy-toast">Copied to clipboard!</div>
+      </section>
+
+      <!-- Primary Keypad (Reference Design - Exact 4x5 Grid) -->
+      <div class="keypad-grid" id="primary-keypad">
+        <!-- Row 1: Backspace, AC, %, ÷ -->
+        <button class="key-btn key-function" data-action="backspace" aria-label="Backspace" id="btn-backspace">
+          <svg class="key-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+            <line x1="18" y1="9" x2="12" y2="15"></line>
+            <line x1="12" y1="9" x2="18" y2="15"></line>
+          </svg>
+        </button>
+        <button class="key-btn key-function" data-action="clear" aria-label="All Clear" id="btn-clear">AC</button>
+        <button class="key-btn key-function" data-action="percent" aria-label="Percent">%</button>
+        <button class="key-btn key-operator" data-action="operator" data-val="/" aria-label="Divide">÷</button>
+
+        <!-- Row 2: 7, 8, 9, × -->
+        <button class="key-btn key-num" data-action="number" data-val="7">7</button>
+        <button class="key-btn key-num" data-action="number" data-val="8">8</button>
+        <button class="key-btn key-num" data-action="number" data-val="9">9</button>
+        <button class="key-btn key-operator" data-action="operator" data-val="*" aria-label="Multiply">×</button>
+
+        <!-- Row 3: 4, 5, 6, − -->
+        <button class="key-btn key-num" data-action="number" data-val="4">4</button>
+        <button class="key-btn key-num" data-action="number" data-val="5">5</button>
+        <button class="key-btn key-num" data-action="number" data-val="6">6</button>
+        <button class="key-btn key-operator" data-action="operator" data-val="-" aria-label="Subtract">−</button>
+
+        <!-- Row 4: 1, 2, 3, + -->
+        <button class="key-btn key-num" data-action="number" data-val="1">1</button>
+        <button class="key-btn key-num" data-action="number" data-val="2">2</button>
+        <button class="key-btn key-num" data-action="number" data-val="3">3</button>
+        <button class="key-btn key-operator" data-action="operator" data-val="+" aria-label="Add">+</button>
+
+        <!-- Row 5: +/-, 0, ., = -->
+        <button class="key-btn key-num" data-action="negate" aria-label="Toggle Sign">⁺/₋</button>
+        <button class="key-btn key-num" data-action="number" data-val="0">0</button>
+        <button class="key-btn key-num" data-action="decimal" aria-label="Decimal point">.</button>
+        <button class="key-btn key-operator key-equals" data-action="equals" aria-label="Calculate Equals">=</button>
+      </div>
+
+      <!-- Slide-up Memory Panel Overlay -->
+      <div class="overlay-panel memory-panel" id="memory-panel" aria-label="Memory Controls">
+        <div class="panel-header">
+          <span class="panel-title">Memory Operations</span>
+          <button class="panel-close-btn" id="close-memory-btn" aria-label="Close Memory">✕</button>
+        </div>
+        <div class="memory-status-display">
+          <span class="memory-label">Stored Value:</span>
+          <span class="memory-value" id="memory-display-val">0</span>
+        </div>
+        <div class="memory-actions-grid">
+          <button class="mem-btn" data-action="mc" id="btn-mc" disabled>MC</button>
+          <button class="mem-btn" data-action="mr" id="btn-mr" disabled>MR</button>
+          <button class="mem-btn" data-action="m-plus">M+</button>
+          <button class="mem-btn" data-action="m-minus">M−</button>
+          <button class="mem-btn" data-action="ms">MS</button>
+        </div>
+      </div>
+
+      <!-- Slide-up Scientific Functions Panel Overlay -->
+      <div class="overlay-panel scientific-panel" id="scientific-panel" aria-label="Scientific Functions">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <span class="panel-title">Advanced Functions</span>
+            <button class="sci-mode-btn" data-action="deg-rad" id="btn-deg-rad">RAD</button>
+          </div>
+          <button class="panel-close-btn" id="close-scientific-btn" aria-label="Close Scientific">✕</button>
+        </div>
+        <div class="scientific-grid">
+          <button class="sci-btn" data-action="sin">sin</button>
+          <button class="sci-btn" data-action="cos">cos</button>
+          <button class="sci-btn" data-action="tan">tan</button>
+          <button class="sci-btn" data-action="pi">π</button>
+          <button class="sci-btn" data-action="e">e</button>
+          
+          <button class="sci-btn" data-action="asin">sin⁻¹</button>
+          <button class="sci-btn" data-action="acos">cos⁻¹</button>
+          <button class="sci-btn" data-action="atan">tan⁻¹</button>
+          <button class="sci-btn" data-action="power">xʸ</button>
+          <button class="sci-btn" data-action="factorial">x!</button>
+
+          <button class="sci-btn" data-action="square">x²</button>
+          <button class="sci-btn" data-action="cube">x³</button>
+          <button class="sci-btn" data-action="sqrt">√x</button>
+          <button class="sci-btn" data-action="cbrt">∛x</button>
+          <button class="sci-btn" data-action="reciprocal">1/x</button>
+
+          <button class="sci-btn" data-action="log">log₁₀</button>
+          <button class="sci-btn" data-action="ln">ln</button>
+          <button class="sci-btn" data-action="open-paren">(</button>
+          <button class="sci-btn" data-action="close-paren">)</button>
+          <button class="sci-btn done-btn" id="done-scientific-btn">Done</button>
+        </div>
+      </div>
+
+      <!-- Slide-over History Drawer -->
+      <aside class="history-drawer" id="history-drawer" aria-label="Calculation History" aria-hidden="true">
+        <div class="history-header">
+          <div class="history-title-wrap">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <h3>History</h3>
+          </div>
+          <div class="history-header-actions">
+            <button id="clear-history-btn" class="text-btn danger" title="Clear All History">Clear</button>
+            <button id="close-history-btn" class="subtle-icon-btn close-btn" aria-label="Close History">✕</button>
+          </div>
+        </div>
+
+        <div class="history-content" id="history-list">
+          <!-- Populated by JavaScript -->
+          <div class="history-empty" id="history-empty">
+            <div class="empty-icon">📝</div>
+            <p class="empty-text">No calculations yet</p>
+            <span class="empty-subtext">Completed calculations will appear here</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Overlay backdrop for drawers -->
+      <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

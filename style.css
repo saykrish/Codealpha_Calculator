@@ -1,0 +1,825 @@
+/* ==========================================================================
+   NeoCalc - Modern Responsive Smart Calculator
+   Pixel-perfect Reference Match | Zero Scroll | Laptop & Smartphone Optimized
+   ========================================================================== */
+
+/* Design Tokens & CSS Variables */
+:root {
+  /* Dark Theme (Default - Reference match) */
+  --bg-app: #08080a;
+  --bg-calculator: #000000;
+  --bg-display: #000000;
+  --text-primary: #ffffff;
+  --text-secondary: #8e8e93;
+  --text-muted: #636366;
+  
+  /* Keypad Button Colors */
+  --btn-num-bg: #2c2c2e;
+  --btn-num-hover: #3a3a3c;
+  --btn-num-active: #48484a;
+  --btn-num-text: #ffffff;
+
+  --btn-fn-bg: #505052;
+  --btn-fn-hover: #636366;
+  --btn-fn-active: #7c7c80;
+  --btn-fn-text: #ffffff;
+
+  --btn-op-bg: #ff9500;
+  --btn-op-hover: #ffaa33;
+  --btn-op-active: #e08500;
+  --btn-op-text: #ffffff;
+  --btn-op-active-ring: rgba(255, 149, 0, 0.4);
+
+  --btn-sci-bg: #222226;
+  --btn-sci-hover: #2c2c32;
+  --btn-sci-text: #0a84ff;
+
+  --drawer-bg: #161618;
+  --drawer-border: #2c2c2e;
+  --drawer-item-bg: #222226;
+  --drawer-item-hover: #2c2c32;
+
+  --phone-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --transition-speed: 0.2s;
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+  --bg-app: #e5e5ea;
+  --bg-calculator: #ffffff;
+  --bg-display: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #6e6e73;
+  --text-muted: #8e8e93;
+
+  --btn-num-bg: #e5e5ea;
+  --btn-num-hover: #d1d1d6;
+  --btn-num-active: #c7c7cc;
+  --btn-num-text: #000000;
+
+  --btn-fn-bg: #d1d1d6;
+  --btn-fn-hover: #c7c7cc;
+  --btn-fn-active: #aeaeb2;
+  --btn-fn-text: #000000;
+
+  --btn-op-bg: #ff9500;
+  --btn-op-hover: #ffaa33;
+  --btn-op-active: #e08500;
+  --btn-op-text: #ffffff;
+  --btn-op-active-ring: rgba(255, 149, 0, 0.3);
+
+  --btn-sci-bg: #f2f2f7;
+  --btn-sci-hover: #e5e5ea;
+  --btn-sci-text: #007aff;
+
+  --drawer-bg: #f9f9fb;
+  --drawer-border: #e5e5ea;
+  --drawer-item-bg: #ffffff;
+  --drawer-item-hover: #f2f2f7;
+
+  --phone-shadow: 0 15px 40px -8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+/* Reset and Zero-Scroll Rules */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden; /* Guarantee zero page scrollbars */
+  font-family: var(--font-family);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed) ease;
+}
+
+/* App Wrapper - Perfectly Centered in Viewport */
+.app-wrapper {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0px, 1.5vh, 16px);
+  overflow: hidden;
+}
+
+/* Main Calculator Container - Fits 100% on Laptop and Smartphone */
+.calculator-container {
+  position: relative;
+  width: 100%;
+  max-width: min(390px, 94vw);
+  height: 100%;
+  max-height: min(710px, 98dvh);
+  background-color: var(--bg-calculator);
+  border-radius: clamp(24px, 4vw, 38px);
+  box-shadow: var(--phone-shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(12px, 2vh, 18px) clamp(14px, 3.5vw, 20px) clamp(12px, 2.5vh, 20px);
+  overflow: hidden;
+  transition: background-color var(--transition-speed) ease;
+}
+
+/* Floating Top Bar (Zero vertical flex height) */
+.floating-top-bar {
+  position: absolute;
+  top: clamp(10px, 1.8vh, 16px);
+  left: clamp(12px, 3.5vw, 20px);
+  right: clamp(12px, 3.5vw, 20px);
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none; /* Let clicks pass through empty spaces */
+}
+
+.top-bar-left, .top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto; /* Buttons are clickable */
+}
+
+/* Subtle Unobtrusive Control Buttons */
+.subtle-icon-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  opacity: 0.7;
+  transition: opacity 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+}
+
+.subtle-icon-btn:hover {
+  opacity: 1;
+  background-color: rgba(128, 128, 128, 0.18);
+  color: var(--text-primary);
+}
+
+.subtle-icon-btn:active {
+  transform: scale(0.92);
+}
+
+.subtle-pill-btn {
+  background: rgba(128, 128, 128, 0.14);
+  border: none;
+  outline: none;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.78;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.subtle-pill-btn:hover {
+  opacity: 1;
+  background-color: rgba(128, 128, 128, 0.25);
+  color: var(--text-primary);
+}
+
+.subtle-pill-btn.active {
+  background-color: var(--btn-op-bg);
+  color: #ffffff;
+  opacity: 1;
+}
+
+.svg-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Icon visibility according to theme */
+[data-theme="dark"] .moon-icon { display: block; }
+[data-theme="dark"] .sun-icon { display: none; }
+[data-theme="light"] .moon-icon { display: none; }
+[data-theme="light"] .sun-icon { display: block; }
+
+.hidden {
+  display: none !important;
+}
+
+/* Badge & Dots */
+.count-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background-color: var(--btn-op-bg);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  min-width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+.active-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--btn-op-bg);
+  display: inline-block;
+}
+
+/* Display Section */
+.display-section {
+  flex: 1;
+  min-height: 0;
+  max-height: 32%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  width: 100%;
+  padding: 34px 4px 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+.expression-display {
+  font-size: clamp(0.95rem, 2.3vh, 1.25rem);
+  font-weight: 400;
+  color: var(--text-secondary);
+  min-height: 1.4em;
+  word-break: break-all;
+  text-align: right;
+  line-height: 1.2;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.result-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  overflow: hidden;
+}
+
+.result-display {
+  font-size: clamp(2.3rem, 7.8vh, 3.9rem);
+  font-weight: 300;
+  color: var(--text-primary);
+  text-align: right;
+  letter-spacing: -1.2px;
+  line-height: 1.05;
+  white-space: nowrap;
+  transition: font-size 0.12s ease;
+}
+
+/* Floating Copy Toast */
+.copy-toast {
+  position: absolute;
+  top: 42px;
+  right: 6px;
+  background: rgba(30, 30, 32, 0.92);
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 25;
+}
+
+.copy-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Primary Keypad Grid (Matches Reference Layout Perfectly) */
+.keypad-grid {
+  flex: 2.8;
+  min-height: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: clamp(6px, 1.6vh, 14px);
+  margin-top: auto;
+}
+
+/* Circular Keypad Buttons */
+.key-btn {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.25rem, 3.6vh, 1.95rem);
+  font-weight: 400;
+  touch-action: manipulation;
+  transition: background-color 0.12s ease, transform 0.1s ease;
+  outline: none;
+  justify-self: center;
+  align-self: center;
+}
+
+.key-btn:active {
+  transform: scale(0.93);
+}
+
+/* Number Buttons (Rows 2, 3, 4, 5) */
+.key-btn.key-num {
+  background-color: var(--btn-num-bg);
+  color: var(--btn-num-text);
+}
+
+.key-btn.key-num:active {
+  background-color: var(--btn-num-active);
+}
+
+/* Negate button custom typography */
+.key-btn[data-action="negate"] {
+  font-size: clamp(1.15rem, 3.2vh, 1.7rem);
+  font-weight: 500;
+}
+
+/* Top Row Function Buttons (⌫, AC, %) */
+.key-btn.key-function {
+  background-color: var(--btn-fn-bg);
+  color: var(--btn-fn-text);
+  font-weight: 500;
+}
+
+.key-btn.key-function:active {
+  background-color: var(--btn-fn-active);
+}
+
+/* Operator Buttons Right Column (÷, ×, −, +, =) */
+.key-btn.key-operator {
+  background-color: var(--btn-op-bg);
+  color: var(--btn-op-text);
+  font-size: clamp(1.45rem, 4.2vh, 2.2rem);
+  font-weight: 400;
+}
+
+.key-btn.key-operator:active {
+  background-color: var(--btn-op-active);
+}
+
+/* Operator active indicator state */
+.key-btn.key-operator.is-active-op {
+  background-color: #ffffff;
+  color: var(--btn-op-bg);
+}
+
+[data-theme="light"] .key-btn.key-operator.is-active-op {
+  background-color: #1c1c1e;
+  color: #ffffff;
+}
+
+/* Icons within buttons */
+.key-icon {
+  width: clamp(20px, 4vh, 28px);
+  height: clamp(20px, 4vh, 28px);
+}
+
+/* Hover States (Only when supported by pointer, prevents sticky hover on phone) */
+@media (hover: hover) {
+  .key-btn.key-num:hover { background-color: var(--btn-num-hover); }
+  .key-btn.key-function:hover { background-color: var(--btn-fn-hover); }
+  .key-btn.key-operator:hover { background-color: var(--btn-op-hover); }
+}
+
+/* ==========================================================================
+   Overlay Panels (Memory & Scientific) - Never causes page overflow
+   ========================================================================== */
+.overlay-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--drawer-bg);
+  border-top: 1px solid var(--drawer-border);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.4);
+  z-index: 80;
+  padding: 14px 16px 18px;
+  border-radius: clamp(18px, 3vw, 28px) clamp(18px, 3vw, 28px) 0 0;
+  transform: translateY(105%);
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.overlay-panel.open {
+  transform: translateY(0);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--drawer-border);
+}
+
+.panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.panel-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.panel-close-btn:hover {
+  background: rgba(128, 128, 128, 0.15);
+  color: var(--text-primary);
+}
+
+/* Memory Status */
+.memory-status-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--drawer-item-bg);
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+.memory-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.memory-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--btn-op-bg);
+}
+
+.memory-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.mem-btn {
+  padding: 10px 0;
+  background-color: var(--drawer-item-bg);
+  border: 1px solid var(--drawer-border);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.mem-btn:hover:not(:disabled) {
+  background-color: var(--drawer-item-hover);
+  border-color: var(--btn-op-bg);
+}
+
+.mem-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.mem-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Scientific Panel Grid */
+.sci-mode-btn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--drawer-item-bg);
+  border: 1px solid var(--drawer-border);
+  color: var(--btn-op-bg);
+  cursor: pointer;
+}
+
+.scientific-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.sci-btn {
+  padding: 9px 0;
+  border-radius: 10px;
+  background-color: var(--drawer-item-bg);
+  border: 1px solid var(--drawer-border);
+  color: var(--btn-sci-text);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.12s, transform 0.1s;
+}
+
+.sci-btn:hover {
+  background-color: var(--drawer-item-hover);
+}
+
+.sci-btn:active {
+  transform: scale(0.94);
+}
+
+.sci-btn.done-btn {
+  background-color: var(--btn-op-bg);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+}
+
+/* ==========================================================================
+   History Drawer (Slide-Over)
+   ========================================================================== */
+.history-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 88%;
+  max-width: 340px;
+  background-color: var(--drawer-bg);
+  border-left: 1px solid var(--drawer-border);
+  box-shadow: -8px 0 25px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 16px 14px;
+  border-radius: 0 clamp(24px, 4vw, 38px) clamp(24px, 4vw, 38px) 0;
+}
+
+.history-drawer.open {
+  transform: translateX(0);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--drawer-border);
+  margin-bottom: 12px;
+}
+
+.history-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+}
+
+.history-title-wrap h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.history-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.text-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.text-btn.danger {
+  color: #ff453a;
+}
+
+.text-btn.danger:hover {
+  background-color: rgba(255, 69, 58, 0.15);
+}
+
+.close-btn {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.history-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 2px;
+}
+
+.history-item {
+  background-color: var(--drawer-item-bg);
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  border: 1px solid transparent;
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.history-item:hover {
+  background-color: var(--drawer-item-hover);
+  border-color: rgba(255, 149, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.history-item-exp {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  word-break: break-all;
+  text-align: right;
+}
+
+.history-item-res {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--btn-op-bg);
+  word-break: break-all;
+  text-align: right;
+}
+
+.history-item-time {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  align-self: flex-start;
+}
+
+.history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 30px 10px;
+}
+
+.history-empty .empty-icon {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.history-empty .empty-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.history-empty .empty-subtext {
+  font-size: 0.8rem;
+  max-width: 170px;
+}
+
+/* Backdrop */
+.drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 70;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+  border-radius: clamp(24px, 4vw, 38px);
+}
+
+.drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   Responsive Adaptations (Smartphone Edge-to-Edge & Short Viewports)
+   ========================================================================== */
+
+/* Pure Smartphone Edge-to-Edge Fullscreen (< 520px width) */
+@media (max-width: 520px) {
+  body {
+    background-color: var(--bg-calculator);
+  }
+
+  .app-wrapper {
+    padding: 0;
+  }
+
+  .calculator-container {
+    max-width: 100vw;
+    width: 100vw;
+    max-height: 100dvh;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+    padding: env(safe-area-inset-top, 14px) clamp(12px, 4vw, 18px) env(safe-area-inset-bottom, 16px);
+  }
+
+  .history-drawer {
+    border-radius: 0;
+    width: 90%;
+  }
+
+  .drawer-backdrop {
+    border-radius: 0;
+  }
+
+  .overlay-panel {
+    border-radius: 20px 20px 0 0;
+  }
+}
+
+/* Short Height Laptops & Landscape Phones (Height <= 620px) */
+@media (max-height: 620px) {
+  .calculator-container {
+    max-height: 98dvh;
+    padding: 8px 12px 10px;
+  }
+
+  .display-section {
+    padding-top: 26px;
+    padding-bottom: 4px;
+  }
+
+  .result-display {
+    font-size: clamp(1.8rem, 6.2vh, 2.6rem);
+  }
+
+  .keypad-grid {
+    gap: 5px;
+  }
+
+  .key-btn {
+    font-size: clamp(1.1rem, 3.2vh, 1.45rem);
+  }
+
+  .key-btn.key-operator {
+    font-size: clamp(1.25rem, 3.8vh, 1.65rem);
+  }
+}
